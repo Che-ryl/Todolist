@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stopwatch & Timer</title>
+<style>
+  body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f7f7f7;
+    font-family: Arial, sans-serif;
+  }
+  #timer {
+    font-size: 2em;
+    border: 2px solid #333;
+    padding: 20px;
+    background-color: #fff;
+    margin-bottom: 10px;
+    border-radius: 15px; /* Rounded edges */
+  }
+  button {
+    font-size: 1em;
+    padding: 10px;
+    margin: 5px;
+    border-radius: 15px; /* Rounded edges */
+  }
+  /* Additional styles for specific buttons */
+  #startButton:before {
+    content: '▶';
+  }
+  #stopButton:before {
+    content: '⏸';
+  }
+  #resetButton:before {
+    content: '🔄';
+  }
+  input[type="text"] {
+    font-size: 1em;
+    padding: 10px;
+    margin: 5px;
+    border-radius: 15px; /* Rounded edges */
+  }
+</style>
+</head>
+<body>
+<div id="timer">00:00:00</div>
+<input type="text" id="countdownInput" placeholder="Enter time as HH:MM:SS" />
+<button id="startButton"></button>
+<button id="stopButton"></button>
+<button id="resetButton"></button>
+<button id="countdownButton">Set Timer</button>
+
+
+<script>
+  let seconds = 0, minutes = 0, hours = 0;
+  let timerInterval;
+  const timerElement = document.getElementById('timer');
+  const countdownInput = document.getElementById('countdownInput');
+
+  function updateTimerDisplay() {
+    timerElement.textContent = 
+      (hours ? (hours > 9 ? hours : "0" + hours) : "00") + ":" +
+      (minutes ? (minutes > 9 ? minutes : "0" + minutes) : "00") + ":" +
+      (seconds > 9 ? seconds : "0" + seconds);
+  }
+
+  function updateCountdown() {
+    if (seconds > 0 || minutes > 0 || hours > 0) {
+      seconds--;
+      if (seconds < 0 && (minutes > 0 || hours > 0)) {
+        minutes--;
+        seconds = 59;
+      }
+      if (minutes < 0 && hours > 0) {
+        hours--;
+        minutes = 59;
+      }
+      updateTimerDisplay();
+    } else {
+      clearInterval(timerInterval);
+      timerInterval = null;
+      alert('Countdown finished!');
+    }
+  }
+
+  document.getElementById('startButton').addEventListener('click', function() {
+    if (!timerInterval) {
+      timerInterval = setInterval(updateCountdown, 1000);
+    }
+  });
+
+  document.getElementById('stopButton').addEventListener('click', function() {
+    clearInterval(timerInterval);
+    timerInterval = null;
+  });
+
+  document.getElementById('resetButton').addEventListener('click', function() {
+    clearInterval(timerInterval);
+    timerInterval = null;
+    seconds = 0; minutes = 0; hours = 0;
+    updateTimerDisplay();
+  });
+
+  document.getElementById('countdownButton').addEventListener('click', function() {
+    const timeParts = countdownInput.value.split(':');
+    if (timeParts.length === 3) {
+      hours = parseInt(timeParts[0]);
+      minutes = parseInt(timeParts[1]);
+      seconds = parseInt(timeParts[2]);
+      if (!isNaN(hours) && !isNaN(minutes) && !isNaN(seconds)) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+        timerInterval = setInterval(updateCountdown, 1000);
+      } else {
+        alert('Please enter a valid time as HH:MM:SS.');
+      }
+    } else {
+      alert('Please enter the time in HH:MM:SS format.');
+    }
+  });
+</script>
+</body>
+</html>
